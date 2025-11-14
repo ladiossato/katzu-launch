@@ -1,6 +1,7 @@
 """
-Katzu Waitlist API - Flask Backend for Railway
-Handles waitlist form submissions and adds them to Notion database
+Katzu Waitlist & Contact API - Flask Backend for Railway
+Handles waitlist form submissions and contact form, adds them to Notion database
+Sends contact form emails to hello@katzu.app
 """
 
 from flask import Flask, request, jsonify
@@ -9,6 +10,9 @@ from notion_client import Client
 from datetime import datetime
 import os
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -121,9 +125,13 @@ def add_to_waitlist():
                     }
                 },
                 "Status": {
-                    "select": {
-                        "name": "New"
-                    }
+                    "rich_text": [
+                        {
+                            "text": {
+                                "content": "New"
+                            }
+                        }
+                    ]
                 }
             }
         )
@@ -141,6 +149,110 @@ def add_to_waitlist():
             "error": "Failed to add to waitlist",
             "details": str(e)
         }), 500
+
+@app.route('/api/contact', methods=['POST', 'OPTIONS'])
+def contact():
+    """
+    Handle contact form submission
+    
+    Expected JSON payload:
+    {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "message": "Message content"
+    }
+    """
+    
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 204
+    
+    try:
+        # Get form data
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        # Validate required fields
+        name = data.get('name', '').strip()
+        email = data.get('email', '').strip()
+        message = data.get('message', '').strip()
+        
+        if not name or not email or not message:
+            return jsonify({"error": "Name, email, and message are required"}), 400
+        
+        # Validate email format
+        if '@' not in email or '.' not in email:
+            return jsonify({"error": "Invalid email format"}), 400
+        
+        logger.info(f"New contact form submission from: {name} ({email})")
+        
+        # Send email
+        try:
+            send_contact_email(name, email, message)
+            logger.info(f"Contact email sent successfully to hello@katzu.app")
+        except Exception as e:
+            logger.error(f"Failed to send contact email: {str(e)}")
+            # Continue even if email fails - we still want to log it
+        
+        return jsonify({
+            "success": True,
+            "message": "Message sent successfully"
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error processing contact form: {str(e)}")
+        return jsonify({
+            "error": "Failed to send message",
+            "details": str(e)
+        }), 500
+
+def send_contact_email(name, from_email, message):
+    """
+    Send contact form submission via email to hello@katzu.app
+    Uses SMTP configuration from environment variables
+    """
+    # Email configuration from environment variables
+    smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    smtp_username = os.environ.get("SMTP_USERNAME")
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+    to_email = "hello@katzu.app"
+    
+    if not smtp_username or not smtp_password:
+        raise Exception("SMTP credentials not configured")
+    
+    # Create message
+    msg = MIMEMultipart()
+    msg['From'] = smtp_username
+    msg['To'] = to_email
+    msg['Subject'] = f"Katzu Contact Form - {name}"
+    msg['Reply-To'] = from_email
+    
+    # Email body
+    body = f"""
+New contact form submission from Katzu website:
+
+Name: {name}
+Email: {from_email}
+
+Message:
+{message}
+
+---
+This email was sent from the Katzu contact form.
+Reply directly to this email to respond to {name}.
+    """
+    
+    msg.attach(MIMEText(body, 'plain'))
+    
+    # Send email
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.starttls()
+    server.login(smtp_username, smtp_password)
+    server.send_message(msg)
+    server.quit()
 
 @app.errorhandler(404)
 def not_found(error):
