@@ -121,13 +121,9 @@ def add_to_waitlist():
                     }
                 },
                 "Status": {
-                    "rich_text": [
-                        {
-                            "text": {
-                                "content": "New"
-                            }
-                        }
-                    ]
+                    "select": {
+                        "name": "New"
+                    }
                 }
             }
         )
