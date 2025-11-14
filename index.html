@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Turn every run into a battle. Join team-based running competitions with transparent scoring and daily challenges.">
+    <meta name="keywords" content="running app, fitness competition, team battles, KTX scoring, running streaks">
+    <meta property="og:title" content="Katzu - Turn Every Run Into a Battle">
+    <meta property="og:description" content="Daily team-based running competitions with transparent scoring. Works with Apple Watch, Garmin, Fitbit, and any fitness tracker.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://katzu.app">
+    <title>Katzu - Turn Every Run Into a Battle</title>
+    
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Colors */
+            --black-primary: #0a0a0a;
+            --black-secondary: #1a1a1a;
+            --gold-primary: #FFD700;
+            --gold-secondary: #FFA500;
+            --neutral-gray: #666666;
+            --subtle-gray: #999999;
+            --success-green: #4CAF50;
+            --streak-fire: #FF6B6B;
+
+            /* Typography */
+            --font-stack: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background: var(--black-primary);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-link {
+            color: var(--subtle-gray);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: clamp(44px, 8vw, 95px);
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--subtle-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--subtle-gray);
+            max-width: 680px;
+            margin: 0 auto 48px;
+            line-height: 1.5;
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 64px;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            color: var(--black-primary);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 120px 24px;
+            background: var(--black-secondary);
+        }
+
+        .section-title {
+            font-size: clamp(36px, 5vw, 58px);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: clamp(16px, 2.5vw, 20px);
+            color: var(--subtle-gray);
+            max-width: 800px;
+            margin: 0 auto 64px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 32px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 215, 0, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 44px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .feature-description {
+            font-size: 15px;
+            color: var(--subtle-gray);
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 120px 24px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 48px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 24px;
+        }
+
+        .stat-number {
+            font-size: clamp(44px, 6vw, 68px);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.0;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--neutral-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 120px 24px;
+            background: var(--black-secondary);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            color: var(--black-primary);
+            font-size: 28px;
+            font-weight: 900;
+            border-radius: 50%;
+            margin-bottom: 24px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            font-size: 15px;
+            color: var(--subtle-gray);
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 24px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: clamp(36px, 5vw, 58px);
+            font-weight: 900;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .cta-subtitle {
+            font-size: 18px;
+            color: var(--subtle-gray);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--neutral-gray);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-link {
+            font-size: 14px;
+            color: var(--subtle-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 100px 24px 60px;
+            }
+
+            .features,
+            .stats,
+            .how-it-works,
+            .cta-section {
+                padding: 80px 24px;
+            }
+
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 320px;
+                justify-content: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .feature-card {
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">KATZU</div>
+                <a href="mailto:hello@katzu.app" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="status-badge">Launching Q1 2026</div>
+            <h1 class="hero-title">
+                Turn Every Run<br>Into a <span class="highlight">Battle</span>
+            </h1>
+            <p class="hero-subtitle">
+                Daily team-based running competitions with transparent scoring. 
+                Works with Apple Watch, Garmin, Fitbit, and any fitness tracker.
+            </p>
+            <div class="cta-container">
+                <a href="#waitlist" class="btn btn-primary">
+                    <span>Join Waitlist</span>
+                    <span>→</span>
+                </a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">3v3</div>
+                    <div class="stat-label">Team Battles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24hr</div>
+                    <div class="stat-label">Battle Cycles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Identity Ranks</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Built for Competition</h2>
+            <p class="section-subtitle">
+                Most runners waste their potential on solo runs with zero accountability. 
+                Katzu transforms every run into a battle—where your opponents are waiting, 
+                your team is counting on you, and your streak is on the line.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">⚔️</span>
+                    <h3 class="feature-title">Team Battles</h3>
+                    <p class="feature-description">
+                        Form elite squads of 3 or 5. Face matched opponents daily. 
+                        Dual competition—team outcome plus personal 1v1 match—means you're never running alone again.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3 class="feature-title">Transparent Scoring</h3>
+                    <p class="feature-description">
+                        KTX score based on heart rate zones + elevation. Zero black boxes. 
+                        Know exactly how your effort translates to points. Fair competition starts with transparent rules.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🔥</span>
+                    <h3 class="feature-title">Daily Streaks</h3>
+                    <p class="feature-description">
+                        Build unbroken streaks that become your identity. 
+                        Loss aversion keeps you consistent—breaking a 30-day streak feels worse than missing one workout ever could.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⌚</span>
+                    <h3 class="feature-title">Works with Any Tracker</h3>
+                    <p class="feature-description">
+                        Apple Watch, Garmin, Fitbit, Polar, Wahoo, Suunto—even phone GPS. 
+                        Use what you already own. Zero hardware lock-in. Just pure competition.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🏆</span>
+                    <h3 class="feature-title">MVP Recognition</h3>
+                    <p class="feature-description">
+                        4 ways to win every battle: Highest KTX, Longest Distance, Best Pace, Most Improved. 
+                        Multiple paths to glory mean everyone gets their spotlight moment.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <h3 class="feature-title">Public Profiles</h3>
+                    <p class="feature-description">
+                        Every runner gets katzu.app/@username. Build your competitive reputation. 
+                        Share victories, flex lifetime stats, prove you're built different.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Connect Your Tracker</h3>
+                    <p class="step-description">
+                        Link Apple Health or Health Connect. No additional subscriptions required.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Form Your Team</h3>
+                    <p class="step-description">
+                        Invite 2-4 teammates. Get matched against similar-ability opponents.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Battle Daily</h3>
+                    <p class="step-description">
+                        Complete your run. See results instantly. Build streaks, earn Battle Points.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="waitlist" class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Ready to Battle?</h2>
+            <p class="cta-subtitle">
+                Join the waitlist for early access. Launching Q1 2026 on iOS and Android.
+            </p>
+            <div class="cta-container">
+                <a href="mailto:hello@katzu.app?subject=Waitlist" class="btn btn-primary">
+                    <span>Join Waitlist</span>
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">© 2025 Empty Words, LLC. All rights reserved.</div>
+                <div class="footer-links">
+                    <a href="mailto:hello@katzu.app" class="footer-link">Contact</a>
+                    <a href="mailto:privacy@katzu.app" class="footer-link">Privacy</a>
+                    <a href="mailto:legal@katzu.app" class="footer-link">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="You're in! Welcome to Katzu waitlist.">
+    <title>You're In - Katzu Waitlist</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --black-primary: #0a0a0a;
+            --black-secondary: #1a1a1a;
+            --gold-primary: #FFD700;
+            --gold-secondary: #FFA500;
+            --neutral-gray: #666666;
+            --subtle-gray: #999999;
+            --font-stack: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background: var(--black-primary);
+            color: #ffffff;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 24px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .confirmation-section {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 24px;
+        }
+
+        .confirmation-container { width: 100%; text-align: center; }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 32px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .confirmation-title {
+            font-size: clamp(36px, 7vw, 58px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--subtle-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .confirmation-subtitle {
+            font-size: 20px;
+            color: var(--subtle-gray);
+            line-height: 1.6;
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .info-box {
+            background: var(--black-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 32px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .info-box-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-list { list-style: none; padding: 0; }
+        
+        .info-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 16px;
+            color: var(--subtle-gray);
+        }
+
+        .info-list li:last-child { border-bottom: none; }
+        .info-list li::before { content: "✓ "; color: var(--gold-primary); font-weight: bold; margin-right: 12px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 48px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 32px 24px;
+        }
+
+        .stat-number {
+            font-size: 44px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--neutral-gray);
+            text-transform: uppercase;
+        }
+
+        .cta-container { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
+
+        .btn {
+            padding: 16px 40px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            color: var(--black-primary);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }
+
+        footer { padding: 40px 24px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 80px; }
+        .footer-text { font-size: 14px; color: var(--neutral-gray); }
+
+        @media (max-width: 768px) {
+            .confirmation-section { padding: 60px 24px; }
+            .info-box { padding: 32px 24px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .cta-container { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 320px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">KATZU</div>
+        </div>
+    </header>
+
+    <section class="confirmation-section">
+        <div class="confirmation-container">
+            <div class="success-icon">🏆</div>
+            
+            <h1 class="confirmation-title">You're In</h1>
+            
+            <p class="confirmation-subtitle">
+                Check your email. We'll notify you the moment Katzu launches in Q1 2026.
+                You're about to join the most competitive runners on the planet.
+            </p>
+
+            <div class="info-box">
+                <div class="info-box-title">What Happens Next</div>
+                <ul class="info-list">
+                    <li>We'll email you exclusive launch updates and beta access opportunities</li>
+                    <li>You'll be first to form your team when Katzu goes live</li>
+                    <li>Early waitlist members get priority matching for competitive balance</li>
+                    <li>No spam—only battle-ready updates when it matters</li>
+                </ul>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">Q1 2026</div>
+                    <div class="stat-label">Launch Date</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3v3</div>
+                    <div class="stat-label">Team Battles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24hr</div>
+                    <div class="stat-label">Battle Cycles</div>
+                </div>
+            </div>
+
+            <div class="cta-container">
+                <a href="index.html" class="btn btn-primary">Back to Home</a>
+                <a href="mailto:hello@katzu.app" class="btn btn-secondary">Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-text">© 2025 Empty Words, LLC. All rights reserved.</div>
+        </div>
+    </footer>
+</body>
+</html>
